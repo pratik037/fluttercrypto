@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'Currencies.dart';
+import 'Currency.dart';
 import 'apikey.dart' as api;
 
 class HomePage extends StatefulWidget {
