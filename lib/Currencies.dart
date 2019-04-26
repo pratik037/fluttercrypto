@@ -1,4 +1,4 @@
-class Currencies{
+class Currency{
   final int id;
   final String name;
   final String symbol;
@@ -10,7 +10,7 @@ class Currencies{
   final DateTime lastUpdated;
 
 
-  Currencies (
+  Currency (
     {
       this.id,
       this.name, 
@@ -23,17 +23,17 @@ class Currencies{
       this.totalSupply
       });
 
-  factory Currencies.fromjson(Map<String,dynamic> json){
-    return Currencies(
-      id: json['data']['id'],
-      name: json['data']['name'],
-      symbol: json['data']['symbol'],
-      slug: json['data']['slug'],
-      circulatingSupply:json['data']['circulating_supply'] ,
-      maxSupply: json['data']['max_supply'],
-      totalSupply: json['data']['total_supply'],
-      lastUpdated: json['data']['last_updated'],
-      errorCode: json['status']['error_code']
+  factory Currency.fromjson(Map<String,dynamic> json){
+    return Currency(
+      id: json['id'],
+      name: json['name'],
+      symbol: json['symbol'],
+      slug: json['slug'],
+      circulatingSupply:json['circulating_supply'] ,
+      maxSupply: json['max_supply'],
+      totalSupply: json['total_supply'],
+      lastUpdated: json['last_updated'],
+      errorCode: json['error_code']
     );
   }
 }

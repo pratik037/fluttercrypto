@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   var currencies;
+  // List<Currency> currencies
   final List<MaterialColor> _colors= [Colors.blue, Colors.indigo,Colors.red]; 
 
 
@@ -23,14 +24,13 @@ class _HomePageState extends State<HomePage> {
     currencies = await getCurrencies();
   }
 
-  Future<Currencies> getCurrencies() async{
+  Future<Currency> getCurrencies() async{
     final response = await http.get(
-      'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest',
-      headers: { "X-CMC_PRO_API_KEY" :api.apikey, ContentType(primaryType, subType),
-       },
-       
+      'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD',
+      headers: { "X-CMC_PRO_API_KEY" :api.apikey,},
     );
-    return json.decode(response.body);
+    Map responseMap = json.decode(response.body);
+    List<Map> data = responseMap['data'];
   }
 
 
