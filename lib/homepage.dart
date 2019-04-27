@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Currency> currencies = null;
+  List<Currency> currencies = [];
   // List<Currency> currencies
   final List<MaterialColor> _colors = [Colors.blue, Colors.indigo, Colors.red];
 
@@ -23,26 +23,38 @@ class _HomePageState extends State<HomePage> {
     getCurrencies();
   }
 
-  Future<List<Currency>> getCurrencies() async {
+  Future getCurrencies() async {
     final response = await http.get(
-      'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD',
+      'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=100&convert=USD',
       headers: {
         "X-CMC_PRO_API_KEY": api.apikey,
       },
     );
     Map responseBody = json.decode(response.body);
     // print(responseBody);
-    List<Map> data = responseBody['data'];
-    print(data);
+    List data = responseBody['data'];
+    // print(data);
 
     List<Currency> fetchedCurrencies = [];
-    data.forEach((Map currencyMap) {
+    data.forEach((map) {
+      //print(map['circulating_supply']);
+      Map<String, dynamic> currencyMap = {
+        "id": map['id'],
+        "name": map['name'],
+        "lastUpdated": map['last_updated'],
+        "USD": {"price" : map['quote']['USD']['price'], 
+        "percent_change_1h":map['quote']['USD']['percent_change_1h'],
+        "percent_change_24h":map['quote']['USD']['percent_change_24h'],
+        "percent_change_7d":map['quote']['USD']['percent_change_7d'],
+        "market_cap": map['quote']['USD']['market_cap'],
+         },
+        
+      };
       Currency currency = Currency.fromjson(currencyMap);
-      // print(currency);
       fetchedCurrencies.add(currency);
     });
 
-    // debugPrint(fetchedCurrencies.toString());
+    // print(fetchedCurrencies.length);
 
     setState(() {
       currencies = fetchedCurrencies;
@@ -55,7 +67,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("CryptoCurrency"),
       ),
-      body: currencies == null
+      body: currencies.length == 0
           ? Center(
               child: PKCardListSkeleton(
               isBottomLinesActive: true,
@@ -66,16 +78,42 @@ class _HomePageState extends State<HomePage> {
               onRefresh: getCurrencies,
               child: ListView.builder(
                   itemCount: currencies.length,
-                  itemBuilder: (_, int index) => Card(
-                        elevation: 0,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Text("\$"),
-                          ),
-
-                          // title: Text(currencies[index]["name"]),
+                  itemBuilder: (_, int index) {
+                    Currency currency = currencies[index];
+                    
+                    return Card(
+                      elevation: 0,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          child: Text("\$"),
                         ),
-                      )),
+                        title: Text(currency.name),
+                        subtitle: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              
+                              Row(
+                                children: <Widget>[
+                                  Text("Price: "),
+                                  Text(currency.uSd['price']),
+                                ],
+                              ),
+
+
+                              Row(
+                                children: <Widget>[
+                                  Text("% Changes: "),
+                                  Text("1h: "),
+                                  Text(currency.uSd['percent_change_1h'].toString()),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      ),
+                    );
+                  }),
             ),
     );
   }
