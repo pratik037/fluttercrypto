@@ -42,13 +42,13 @@ class _HomePageState extends State<HomePage> {
         "id": map['id'],
         "name": map['name'],
         "lastUpdated": map['last_updated'],
-        "USD": {"price" : map['quote']['USD']['price'], 
-        "percent_change_1h":map['quote']['USD']['percent_change_1h'],
-        "percent_change_24h":map['quote']['USD']['percent_change_24h'],
-        "percent_change_7d":map['quote']['USD']['percent_change_7d'],
-        "market_cap": map['quote']['USD']['market_cap'],
-         },
-        
+        "USD": {
+          "price": map['quote']['USD']['price'],
+          "percent_change_1h": map['quote']['USD']['percent_change_1h'],
+          "percent_change_24h": map['quote']['USD']['percent_change_24h'],
+          "percent_change_7d": map['quote']['USD']['percent_change_7d'],
+          "market_cap": map['quote']['USD']['market_cap'],
+        },
       };
       Currency currency = Currency.fromjson(currencyMap);
       fetchedCurrencies.add(currency);
@@ -60,6 +60,9 @@ class _HomePageState extends State<HomePage> {
       currencies = fetchedCurrencies;
     });
   }
+
+  TextStyle red = TextStyle(color: Colors.red);
+  TextStyle green = TextStyle(color: Colors.green);
 
   @override
   Widget build(BuildContext context) {
@@ -80,38 +83,70 @@ class _HomePageState extends State<HomePage> {
                   itemCount: currencies.length,
                   itemBuilder: (_, int index) {
                     Currency currency = currencies[index];
-                    
+
                     return Card(
                       elevation: 0,
                       child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text("\$"),
-                        ),
-                        title: Text(currency.name),
-                        subtitle: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              
-                              Row(
-                                children: <Widget>[
-                                  Text("Price: "),
-                                  Text(currency.uSd['price']),
-                                ],
-                              ),
-
-
-                              Row(
-                                children: <Widget>[
-                                  Text("% Changes: "),
-                                  Text("1h: "),
-                                  Text(currency.uSd['percent_change_1h'].toString()),
-                                ],
-                              ),
-                            ],
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.transparent,
+                            child: Image.network(api.symbolUrl+currency.id.toString()+".png"),
                           ),
-                        )
-                      ),
+                          title: Text(currency.name),
+                          subtitle: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text("Price: "),
+                                    Text(currency.uSd['price']
+                                        .toStringAsFixed(2)),
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(Icons.insert_chart),
+                                    Text("1h: "),
+                                    Text(
+                                      currency.uSd['percent_change_1h']
+                                              .toStringAsFixed(3) +
+                                          "%",
+                                      style:
+                                          currency.uSd['percent_change_1h'] < 0
+                                              ? red
+                                              : green,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text("24h: "),
+                                    Text(
+                                      currency.uSd['percent_change_24h']
+                                              .toStringAsFixed(3) +
+                                          "%",
+                                      style:
+                                          currency.uSd['percent_change_24h'] < 0
+                                              ? red
+                                              : green,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text("7d: "),
+                                    Text(
+                                      currency.uSd['percent_change_7d']
+                                              .toStringAsFixed(3) +
+                                          "%",
+                                      style:
+                                          currency.uSd['percent_change_7d'] < 0
+                                              ? red
+                                              : green,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )),
                     );
                   }),
             ),
