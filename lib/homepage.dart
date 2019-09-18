@@ -5,6 +5,8 @@ import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:cryptoflutter/currenciesModel.dart';
 import 'apikey.dart' as api;
+import 'package:groovin_widgets/groovin_widgets.dart';
+import 'package:groovin_material_icons/groovin_material_icons.dart';
 
 class HomePage extends StatefulWidget {
   final CurrenciesListModel currenciesListModel;
@@ -25,16 +27,37 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  TextStyle red = TextStyle(color: Colors.red);
-  TextStyle green = TextStyle(color: Colors.green);
+  TextStyle red = TextStyle(color: Colors.red, fontWeight: FontWeight.w400);
+  TextStyle green = TextStyle(color: Colors.green, fontWeight: FontWeight.w400);
 
   @override
   Widget build(BuildContext context) {
     var crn = Provider.of<CurrenciesListModel>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("CryptoWorld"),
-        elevation: 3,
+    return SplitColorBackground(
+      headerColor: Colors.indigo,
+      header: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Text(
+            'CryptoWorld',
+            style: TextStyle(
+              letterSpacing: 3,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          // SizedBox(height: 30,),
+          Text(
+            'All Crypto Currencies in one place',
+            style: TextStyle(
+              letterSpacing: 2,
+              fontSize: 20,
+              // fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: crn.length == 0
           ? Center(
@@ -44,6 +67,7 @@ class _HomePageState extends State<HomePage> {
               length: 5,
             ))
           : LiquidPullToRefresh(
+            color: Colors.indigo,
               showChildOpacityTransition: false,
               onRefresh: () async {
                 await crn.fetchCurrencies();
@@ -56,26 +80,28 @@ class _HomePageState extends State<HomePage> {
                     return Card(
                       elevation: 4,
                       child: ListTile(
+                        
                           //Currency Symbol
                           leading: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               CircleAvatar(
-                                
                                 backgroundColor: Colors.transparent,
-                                child: Image.network(api.symbolUrl +currency.id.toString() + ".png"),
+                                child: Image.network(api.symbolUrl +
+                                    currency.id.toString() +
+                                    ".png"),
                               ),
                             ],
                           ),
                           isThreeLine: true,
                           title: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(currency.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.indigo
-                              ),
+                            child: Text(
+                              currency.name,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.indigo),
                             ),
                           ),
                           subtitle: Container(
@@ -85,8 +111,13 @@ class _HomePageState extends State<HomePage> {
                                 Row(
                                   children: <Widget>[
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(8,4,4,8),
-                                      child: Text("Price: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(8, 4, 4, 8),
+                                      child: Text(
+                                        "Price: ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                     Text(crn.currencies[index].price
                                         .toStringAsFixed(2)),
@@ -94,27 +125,55 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Row(
                                   children: <Widget>[
-                                    Icon(Icons.insert_chart, color: Colors.teal,),
-                                    Text("1h: "),
-                                    Text(
-                                      crn.currencies[index].percentChange1.toStringAsFixed(3) + "%",
-                                      style: crn.currencies[index].percentChange1 < 0 ? red : green,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      child: Icon(
+                                        GroovinMaterialIcons.chart_line,
+                                        color: Colors.cyan,
+                                      ),
                                     ),
-                                    SizedBox(
+                                    Text("1h: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                    Text(
+                                      crn.currencies[index].percentChange1
+                                              .toStringAsFixed(3) +
+                                          "%",
+                                      style:
+                                          crn.currencies[index].percentChange1 <
+                                                  0
+                                              ? red
+                                              : green,
+                                    ),
+                                    Container(
                                       width: 10,
+                                      alignment: Alignment.center,
+                                      child: Text("|", style: TextStyle(fontWeight: FontWeight.bold,)),
                                     ),
-                                    Text("24h: "),
+                                    Text("24h: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                     Text(
-                                      crn.currencies[index].percentChange24.toStringAsFixed(3) + "%",
-                                      style: crn.currencies[index].percentChange24 < 0 ? red : green,
+                                      crn.currencies[index].percentChange24
+                                              .toStringAsFixed(3) +
+                                          "%",
+                                      style: crn.currencies[index]
+                                                  .percentChange24 <
+                                              0
+                                          ? red
+                                          : green,
                                     ),
-                                    SizedBox(
+                                    Container(
                                       width: 10,
+                                      alignment: Alignment.center,
+                                      child: Text("|", style: TextStyle(fontWeight: FontWeight.bold,)),
                                     ),
-                                    Text("7d: "),
+                                    Text("7d: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                     Text(
-                                      crn.currencies[index].percentChange7.toStringAsFixed(3) + "%",
-                                      style:crn.currencies[index].percentChange7 < 0 ? red : green,
+                                      crn.currencies[index].percentChange7
+                                              .toStringAsFixed(3) +
+                                          "%",
+                                      style:
+                                          crn.currencies[index].percentChange7 <
+                                                  0
+                                              ? red
+                                              : green,
                                     ),
                                   ],
                                 ),
