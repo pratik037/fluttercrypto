@@ -1,64 +1,28 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'Currency.dart';
-import 'apikey.dart' as api;
 import 'package:pk_skeleton/pk_skeleton.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:cryptoflutter/currenciesModel.dart';
+import 'apikey.dart' as api;
 
 class HomePage extends StatefulWidget {
+  final CurrenciesListModel currenciesListModel;
+
+  const HomePage({Key key, this.currenciesListModel}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Currency> currencies = [];
+  CurrenciesListModel currenciesListModel;
   // List<Currency> currencies
   final List<MaterialColor> _colors = [Colors.blue, Colors.indigo, Colors.red];
 
   @override
   void initState() {
+    currenciesListModel = this.widget.currenciesListModel;
     super.initState();
-    getCurrencies();
-  }
-
-  Future getCurrencies() async {
-    final response = await http.get(
-      'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=100&convert=USD',
-      headers: {
-        "X-CMC_PRO_API_KEY": api.apikey,
-      },
-    );
-    Map responseBody = json.decode(response.body);
-    // print(responseBody);
-    List data = responseBody['data'];
-    // print(data);
-
-    List<Currency> fetchedCurrencies = [];
-    data.forEach((map) {
-      //print(map['circulating_supply']);
-      Map<String, dynamic> currencyMap = {
-        "id": map['id'],
-        "name": map['name'],
-        "lastUpdated": map['last_updated'],
-        "USD": {
-          "price": map['quote']['USD']['price'],
-          "percent_change_1h": map['quote']['USD']['percent_change_1h'],
-          "percent_change_24h": map['quote']['USD']['percent_change_24h'],
-          "percent_change_7d": map['quote']['USD']['percent_change_7d'],
-          "market_cap": map['quote']['USD']['market_cap'],
-        },
-      };
-      Currency currency = Currency.fromjson(currencyMap);
-      fetchedCurrencies.add(currency);
-    });
-
-    // print(fetchedCurrencies.length);
-
-    setState(() {
-      currencies = fetchedCurrencies;
-    });
   }
 
   TextStyle red = TextStyle(color: Colors.red);
@@ -66,81 +30,91 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var crn = Provider.of<CurrenciesListModel>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("CryptoCurrency"),
+        title: Text("CryptoWorld"),
+        elevation: 3,
       ),
-      body: currencies.length == 0
+      body: crn.length == 0
           ? Center(
               child: PKCardListSkeleton(
               isBottomLinesActive: true,
               isCircularImage: true,
               length: 5,
             ))
-          : RefreshIndicator(
-              onRefresh: getCurrencies,
+          : LiquidPullToRefresh(
+              showChildOpacityTransition: false,
+              onRefresh: () async {
+                await crn.fetchCurrencies();
+              },
               child: ListView.builder(
-                  itemCount: currencies.length,
-                  itemBuilder: (_, int index) {
-                    Currency currency = currencies[index];
+                  itemCount: crn.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Currency currency = crn.currencies[index];
 
                     return Card(
-                      elevation: 0,
+                      elevation: 4,
                       child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            child: Image.network(api.symbolUrl+currency.id.toString()+".png"),
+                          //Currency Symbol
+                          leading: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              CircleAvatar(
+                                
+                                backgroundColor: Colors.transparent,
+                                child: Image.network(api.symbolUrl +currency.id.toString() + ".png"),
+                              ),
+                            ],
                           ),
-                          title: Text(currency.name),
+                          isThreeLine: true,
+                          title: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(currency.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.indigo
+                              ),
+                            ),
+                          ),
                           subtitle: Container(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Text("Price: "),
-                                    Text(currency.uSd['price']
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(8,4,4,8),
+                                      child: Text("Price: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                    ),
+                                    Text(crn.currencies[index].price
                                         .toStringAsFixed(2)),
                                   ],
                                 ),
                                 Row(
                                   children: <Widget>[
-                                    Icon(Icons.insert_chart),
+                                    Icon(Icons.insert_chart, color: Colors.teal,),
                                     Text("1h: "),
                                     Text(
-                                      currency.uSd['percent_change_1h']
-                                              .toStringAsFixed(3) +
-                                          "%",
-                                      style:
-                                          currency.uSd['percent_change_1h'] < 0
-                                              ? red
-                                              : green,
+                                      crn.currencies[index].percentChange1.toStringAsFixed(3) + "%",
+                                      style: crn.currencies[index].percentChange1 < 0 ? red : green,
                                     ),
                                     SizedBox(
                                       width: 10,
                                     ),
                                     Text("24h: "),
                                     Text(
-                                      currency.uSd['percent_change_24h']
-                                              .toStringAsFixed(3) +
-                                          "%",
-                                      style:
-                                          currency.uSd['percent_change_24h'] < 0
-                                              ? red
-                                              : green,
+                                      crn.currencies[index].percentChange24.toStringAsFixed(3) + "%",
+                                      style: crn.currencies[index].percentChange24 < 0 ? red : green,
                                     ),
                                     SizedBox(
                                       width: 10,
                                     ),
                                     Text("7d: "),
                                     Text(
-                                      currency.uSd['percent_change_7d']
-                                              .toStringAsFixed(3) +
-                                          "%",
-                                      style:
-                                          currency.uSd['percent_change_7d'] < 0
-                                              ? red
-                                              : green,
+                                      crn.currencies[index].percentChange7.toStringAsFixed(3) + "%",
+                                      style:crn.currencies[index].percentChange7 < 0 ? red : green,
                                     ),
                                   ],
                                 ),
