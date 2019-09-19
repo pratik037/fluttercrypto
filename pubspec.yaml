@@ -27,6 +27,8 @@ dependencies:
   flutter_svg: ^0.14.1
   groovin_material_icons: ^1.1.6
   groovin_widgets: ^1.4.2
+  # intl: ^0.16.0
+  date_format: ^1.0.6
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
