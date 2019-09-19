@@ -1,18 +1,9 @@
-# cryptoflutter
+# Flutter Crypto
 
-A new Flutter project.
+A Flutter based application that fetches the most recent available data available for CryptoCurrencies from [CoinMarketCap](https://coinmarketcap.com/api/) API.
+The application uses [Provider](https://pub.dev/packages/provider) for state-management and has some different widgets from [groovin](https://pub.dev/packages?q=groovin) package.
 
-## Getting Started
+## Screenshots
+<img src='screenshots/1.png' height=400px> <img src='screenshots/2.png' height=400px> <img src='screenshots/3.png' height=400px> 
 
-This project is a starting point for a Flutter application.
-
-![image](https://i.ibb.co/VtFVfhC/Screenshot-1556343255.png)
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+<img src = 'screenshots/4.png' height=400px> <img src = 'screenshots/5.png' height=400px> <img src = 'screenshots/6.png' height=400px>
